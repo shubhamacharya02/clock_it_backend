@@ -1,0 +1,6 @@
+Source Input Type: {input_type}
+
+Source Raw Content:
+{raw_content}
+
+Extract the recipe title, servings, and full list of ingredients with canonical snake_case names and confidence scores.
