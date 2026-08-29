@@ -2,7 +2,8 @@ import uuid
 from datetime import datetime
 from enum import Enum
 from typing import Optional, List, TYPE_CHECKING
-from sqlmodel import SQLModel, Field, Relationship, UniqueConstraint
+from sqlmodel import SQLModel, Field, Relationship, UniqueConstraint, Column
+from sqlalchemy import String
 
 if TYPE_CHECKING:
     from app.models.user import User
@@ -18,7 +19,10 @@ class Cart(SQLModel, table=True):
 
     id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True, nullable=False)
     user_id: uuid.UUID = Field(..., foreign_key="users.id", index=True, nullable=False)
-    status: CartStatus = Field(default=CartStatus.ACTIVE, nullable=False)
+    status: CartStatus = Field(
+        default=CartStatus.ACTIVE,
+        sa_column=Column(String(), nullable=False, default=CartStatus.ACTIVE.value)
+    )
     created_at: datetime = Field(default_factory=datetime.utcnow, nullable=False)
     updated_at: datetime = Field(default_factory=datetime.utcnow, nullable=False)
 

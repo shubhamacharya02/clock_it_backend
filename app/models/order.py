@@ -4,7 +4,7 @@ from decimal import Decimal
 from enum import Enum
 from typing import Optional, List, TYPE_CHECKING
 from sqlmodel import SQLModel, Field, Relationship, Column
-from sqlalchemy import NUMERIC
+from sqlalchemy import NUMERIC, String
 
 if TYPE_CHECKING:
     from app.models.user import User
@@ -21,7 +21,10 @@ class Order(SQLModel, table=True):
     user_id: uuid.UUID = Field(..., foreign_key="users.id", index=True, nullable=False)
     order_number: str = Field(..., max_length=100, unique=True, index=True, nullable=False)
     total_amount: Decimal = Field(..., sa_column=Column(NUMERIC(10, 2), nullable=False))
-    status: OrderStatus = Field(default=OrderStatus.CONFIRMED, nullable=False)
+    status: OrderStatus = Field(
+        default=OrderStatus.CONFIRMED,
+        sa_column=Column(String(), nullable=False, default=OrderStatus.CONFIRMED.value)
+    )
     created_at: datetime = Field(default_factory=datetime.utcnow, nullable=False)
     updated_at: datetime = Field(default_factory=datetime.utcnow, nullable=False)
 
