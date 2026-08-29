@@ -4,6 +4,7 @@ from fastapi.responses import JSONResponse
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from app.core.config import settings
+from app.api.v1.router import api_v1_router
 
 app = FastAPI(
     title=settings.APP_NAME,
@@ -19,6 +20,8 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+app.include_router(api_v1_router, prefix="/api/v1")
 
 class AppException(Exception):
     def __init__(self, status_code: int, code: str, message: str, details: List[Dict[str, Any]] = None):
