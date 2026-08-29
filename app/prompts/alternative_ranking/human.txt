@@ -1,0 +1,6 @@
+Primary Out-of-Stock Canonical Ingredient: {canonical_name}
+
+Pre-filtered In-Stock Alternative Candidates JSON:
+{candidates_json}
+
+Rank these in-stock candidates by culinary suitability and provide a 1-sentence alternative rationale for each.

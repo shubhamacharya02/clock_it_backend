@@ -10,6 +10,8 @@ class VariantMatchResponse(BaseModel):
     size_unit: str
     price: Decimal
     available_quantity: int
+    is_alternative: bool = False
+    alternative_reason: Optional[str] = None
 
     class Config:
         from_attributes = True
@@ -29,7 +31,7 @@ class IngredientProductMatchResponse(BaseModel):
     ingredient_id: uuid.UUID
     raw_name: str
     canonical_name: str
-    status: str = Field(..., description="MATCHED or OUT_OF_STOCK")
+    status: str = Field(..., description="MATCHED, OUT_OF_STOCK_NO_ALTERNATIVES, or ALTERNATIVE_RECOMMENDED")
     requires_confirmation: bool = False
     matched_products: List[ProductMatchResponse] = []
 
