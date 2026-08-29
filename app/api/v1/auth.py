@@ -7,7 +7,7 @@ from app.core.security import hash_password, verify_password, create_access_toke
 from app.core.dependencies import get_current_user
 from app.models.user import User
 from app.schemas.auth import UserSignupRequest, UserLoginRequest, TokenResponse, UserResponse
-from app.main import AppException
+from app.core.exceptions import AppException
 
 router = APIRouter(prefix="/auth", tags=["Authentication"])
 

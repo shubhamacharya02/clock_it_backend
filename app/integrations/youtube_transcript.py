@@ -1,7 +1,7 @@
 import re
 from fastapi import status
 from youtube_transcript_api import YouTubeTranscriptApi
-from app.main import AppException
+from app.core.exceptions import AppException
 
 def extract_youtube_video_id(url: str) -> str:
     """Extracts YouTube video ID from standard or shortened URLs."""

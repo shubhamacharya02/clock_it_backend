@@ -10,7 +10,7 @@ from app.services.storage_service import storage_service
 from app.integrations.webpage_fetcher import fetch_webpage_content
 from app.integrations.youtube_transcript import fetch_youtube_transcript
 from app.ai.workflows.recipe_graph import recipe_graph
-from app.main import AppException
+from app.core.exceptions import AppException
 
 class RecipeService:
     async def get_recipe_by_id(self, user_id: uuid.UUID, recipe_id: uuid.UUID, db: AsyncSession) -> Recipe:

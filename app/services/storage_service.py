@@ -3,7 +3,7 @@ from typing import Optional
 from fastapi import status
 from supabase import create_client, Client
 from app.core.config import settings
-from app.main import AppException
+from app.core.exceptions import AppException
 
 class StorageService:
     BUCKET_NAME = "recipe-media"

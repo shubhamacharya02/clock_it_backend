@@ -5,7 +5,7 @@ from langchain_core.messages import SystemMessage, HumanMessage
 from app.ai.llm import get_recipe_llm, get_vision_llm
 from app.ai.schemas.recipe_output import ExtractedRecipe
 from app.prompts.prompt_loader import load_prompt
-from app.main import AppException
+from app.core.exceptions import AppException
 
 def extract_recipe_chain(
     input_type: str,

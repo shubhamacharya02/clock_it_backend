@@ -11,7 +11,7 @@ from app.models.product import Product
 from app.models.inventory import Inventory
 from app.services.product_service import product_service
 from app.schemas.cart import CartItemResponse, CartResponse
-from app.main import AppException
+from app.core.exceptions import AppException
 
 class CartService:
     async def get_or_create_active_cart(self, user_id: uuid.UUID, db: AsyncSession) -> Cart:

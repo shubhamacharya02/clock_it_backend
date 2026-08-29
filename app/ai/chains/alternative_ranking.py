@@ -5,7 +5,7 @@ from langchain_core.messages import SystemMessage, HumanMessage
 from app.ai.llm import get_recipe_llm
 from app.ai.schemas.alternative_output import RankedAlternativeResponse
 from app.prompts.prompt_loader import load_prompt
-from app.main import AppException
+from app.core.exceptions import AppException
 
 def rank_alternatives_chain(canonical_name: str, candidates: List[Dict[str, Any]]) -> RankedAlternativeResponse:
     """

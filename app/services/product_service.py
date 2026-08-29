@@ -16,7 +16,7 @@ from app.schemas.product import (
     IngredientProductMatchResponse,
     RecipeProductDiscoveryResponse
 )
-from app.main import AppException
+from app.core.exceptions import AppException
 
 class ProductService:
     async def get_product_variant_by_id(self, variant_id: uuid.UUID, db: AsyncSession) -> Tuple[ProductVariant, Product, Inventory]:

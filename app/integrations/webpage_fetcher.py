@@ -1,7 +1,7 @@
 import httpx
 from bs4 import BeautifulSoup
 from fastapi import status
-from app.main import AppException
+from app.core.exceptions import AppException
 
 async def fetch_webpage_content(url: str) -> str:
     """Fetches HTML from target URL, strips scripts/styles/nav, and returns clean body text."""

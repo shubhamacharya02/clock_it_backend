@@ -12,7 +12,7 @@ from app.models.product import Product
 from app.models.inventory import Inventory
 from app.models.order import Order, OrderItem, OrderStatus
 from app.schemas.order import OrderItemResponse, OrderResponse
-from app.main import AppException
+from app.core.exceptions import AppException
 
 class OrderService:
     async def get_order_by_id(self, user_id: uuid.UUID, order_id: uuid.UUID, db: AsyncSession) -> OrderResponse:
