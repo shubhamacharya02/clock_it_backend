@@ -56,23 +56,9 @@ class RecipeService:
             # Run LangGraph recipe workflow
             graph_output = await recipe_graph.ainvoke(graph_input)
             extracted = graph_output.get("extracted_recipe")
-            if extracted:
-                if extracted.title and (not recipe.title or recipe.title in ["YouTube Recipe", "Webpage Recipe", "Image Recipe", "Text Recipe"]):
+            if extracted and hasattr(extracted, "title") and extracted.title:
+                if not recipe.title or recipe.title in ["YouTube Recipe", "Webpage Recipe", "Image Recipe", "Text Recipe"]:
                     recipe.title = extracted.title
-                if hasattr(extracted, "description") and extracted.description:
-                    recipe.description = extracted.description
-                if hasattr(extracted, "prep_time") and extracted.prep_time:
-                    recipe.prep_time = extracted.prep_time
-                if hasattr(extracted, "cook_time") and extracted.cook_time:
-                    recipe.cook_time = extracted.cook_time
-                if hasattr(extracted, "servings") and extracted.servings:
-                    recipe.servings = extracted.servings
-                if hasattr(extracted, "equipment_needed") and extracted.equipment_needed:
-                    recipe.equipment_needed = extracted.equipment_needed
-                if hasattr(extracted, "instructions") and extracted.instructions:
-                    recipe.instructions = extracted.instructions
-                if hasattr(extracted, "serving_suggestions") and extracted.serving_suggestions:
-                    recipe.serving_suggestions = extracted.serving_suggestions
 
             ingredients_data = graph_output.get("processed_ingredients", [])
 
