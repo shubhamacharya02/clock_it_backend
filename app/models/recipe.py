@@ -42,4 +42,4 @@ class Recipe(SQLModel, table=True):
     updated_at: datetime = Field(default_factory=datetime.utcnow, nullable=False)
 
     user: Optional["User"] = Relationship(back_populates="recipes")
-    ingredients: List["RecipeIngredient"] = Relationship(back_populates="recipe", sa_relationship_kwargs={"cascade": "all, delete-orphan"})
+    ingredients: List["RecipeIngredient"] = Relationship(back_populates="recipe", sa_relationship_kwargs={"cascade": "all, delete-orphan", "lazy": "selectin"})

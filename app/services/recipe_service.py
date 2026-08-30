@@ -2,6 +2,7 @@ import uuid
 from typing import Optional, List, Dict, Any
 from fastapi import status
 from sqlmodel import select
+from sqlalchemy.orm import selectinload
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.recipe import Recipe, SourceType, RecipeStatus
@@ -15,7 +16,7 @@ from app.core.exceptions import AppException
 class RecipeService:
     async def get_recipe_by_id(self, user_id: uuid.UUID, recipe_id: uuid.UUID, db: AsyncSession) -> Recipe:
         """Fetches recipe by ID, enforcing strict 404 user resource ownership isolation."""
-        result = await db.execute(select(Recipe).where(Recipe.id == recipe_id))
+        result = await db.execute(select(Recipe).options(selectinload(Recipe.ingredients)).where(Recipe.id == recipe_id))
         recipe = result.scalar_one_or_none()
 
         if not recipe or recipe.user_id != user_id:
@@ -78,7 +79,7 @@ class RecipeService:
             await db.refresh(recipe)
 
             # Reload with ingredients relation
-            result = await db.execute(select(Recipe).where(Recipe.id == recipe.id))
+            result = await db.execute(select(Recipe).options(selectinload(Recipe.ingredients)).where(Recipe.id == recipe.id))
             return result.scalar_one()
 
         except Exception as exc:
