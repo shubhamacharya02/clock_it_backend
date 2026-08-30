@@ -1,6 +1,7 @@
 import re
 import json
 import base64
+import logging
 from typing import Optional
 from fastapi import status
 from langchain_core.messages import SystemMessage, HumanMessage
@@ -8,6 +9,8 @@ from app.ai.llm import get_recipe_llm, get_vision_llm
 from app.ai.schemas.recipe_output import ExtractedRecipe
 from app.ai.prompts.recipe_prompts import RECIPE_EXTRACTION_PROMPT
 from app.core.exceptions import AppException
+
+logger = logging.getLogger("uvicorn.error")
 
 def extract_recipe_chain(
     input_type: str,
@@ -53,8 +56,8 @@ def extract_recipe_chain(
 
         if result and isinstance(result, ExtractedRecipe) and result.ingredients:
             return result
-    except Exception:
-        pass
+    except Exception as exc:
+        logger.warning("Structured Function Calling extraction failed: %s", exc)
 
     # 2. Dual-mode fallback: Raw completion + robust JSON extraction
     try:
@@ -66,13 +69,19 @@ def extract_recipe_chain(
         text = raw_res.content if hasattr(raw_res, "content") else str(raw_res)
         
         match = re.search(r"```(?:json)?\s*(\{[\s\S]*?\})\s*```", text)
-        json_str = match.group(1) if match else text[text.find("{"):text.rfind("}")+1]
-        
-        parsed = ExtractedRecipe.model_validate_json(json_str)
-        if parsed and isinstance(parsed, ExtractedRecipe) and parsed.ingredients:
-            return parsed
-    except Exception:
-        pass
+        if match:
+            json_str = match.group(1)
+        else:
+            start = text.find("{")
+            end = text.rfind("}")
+            json_str = text[start:end+1] if start != -1 and end != -1 else ""
+
+        if json_str:
+            parsed = ExtractedRecipe.model_validate_json(json_str)
+            if parsed and isinstance(parsed, ExtractedRecipe) and parsed.ingredients:
+                return parsed
+    except Exception as exc:
+        logger.error("Raw LLM JSON fallback extraction failed: %s", exc, exc_info=True)
 
     raise AppException(
         status_code=status.HTTP_502_BAD_GATEWAY,

@@ -26,4 +26,7 @@ class Settings(BaseSettings):
     VERTEX_MODEL_NAME: str = "gemini-1.5-flash"
     VERTEX_VISION_MODEL_NAME: str = "gemini-1.5-pro"
 
+    CORS_ORIGINS: str = "*"
+
 settings = Settings()
+

@@ -8,7 +8,7 @@ def get_recipe_llm() -> ChatVertexAI:
         project=settings.VERTEX_PROJECT_ID,
         location=settings.VERTEX_LOCATION,
         temperature=0.0,
-        max_output_tokens=2048,
+        max_output_tokens=8192,
     )
 
 def get_vision_llm() -> ChatVertexAI:
@@ -18,5 +18,5 @@ def get_vision_llm() -> ChatVertexAI:
         project=settings.VERTEX_PROJECT_ID,
         location=settings.VERTEX_LOCATION,
         temperature=0.0,
-        max_output_tokens=2048,
+        max_output_tokens=8192,
     )

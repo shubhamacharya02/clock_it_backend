@@ -1,4 +1,4 @@
-from typing import Optional, List
+from typing import Optional, List, Any
 from pydantic import BaseModel, Field, model_validator
 
 class ExtractedIngredient(BaseModel):
@@ -10,6 +10,14 @@ class ExtractedIngredient(BaseModel):
 
     @model_validator(mode="before")
     def resolve_ingredient_fields(cls, values):
+        if isinstance(values, str):
+            return {
+                "raw_name": values,
+                "canonical_name": values.lower().replace(" ", "_").strip(),
+                "quantity": None,
+                "unit": None,
+                "confidence": 1.0
+            }
         if isinstance(values, dict):
             raw = values.get("raw_name") or values.get("item") or values.get("name") or values.get("ingredient") or values.get("canonical_name") or "Ingredient"
             canon = values.get("canonical_name") or str(raw).lower().replace(" ", "_").strip()
@@ -45,6 +53,8 @@ class ExtractedRecipe(BaseModel):
                         clean_insts.append(str(text))
                     else:
                         clean_insts.append(str(item))
+            elif isinstance(raw_insts, str):
+                clean_insts = [raw_insts]
             values["instructions"] = clean_insts
 
             raw_ings = values.get("ingredients") or values.get("recipe_ingredients") or values.get("ingredient_list") or []
