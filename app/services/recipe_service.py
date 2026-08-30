@@ -83,6 +83,8 @@ class RecipeService:
             return result.scalar_one()
 
         except Exception as exc:
+            import logging
+            logging.getLogger("uvicorn.error").error("Recipe AI processing failed: %s", exc, exc_info=True)
             recipe.status = RecipeStatus.FAILED
             await db.commit()
             if isinstance(exc, AppException):
