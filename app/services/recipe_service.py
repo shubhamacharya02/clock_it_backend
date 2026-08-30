@@ -64,12 +64,12 @@ class RecipeService:
             for ing_data in ingredients_data:
                 db_ing = RecipeIngredient(
                     recipe_id=recipe.id,
-                    raw_name=ing_data["raw_name"],
-                    canonical_name=ing_data["canonical_name"],
-                    quantity=ing_data["quantity"],
-                    unit=ing_data["unit"],
-                    confidence=ing_data["confidence"],
-                    requires_confirmation=ing_data["requires_confirmation"],
+                    raw_name=ing_data.get("raw_name") or "Ingredient",
+                    canonical_name=(ing_data.get("canonical_name") or "ingredient").lower().strip(),
+                    quantity=ing_data.get("quantity"),
+                    unit=ing_data.get("unit"),
+                    confidence=float(ing_data.get("confidence", 1.0) or 1.0),
+                    requires_confirmation=bool(ing_data.get("requires_confirmation", False)),
                     is_user_modified=False
                 )
                 db.add(db_ing)
