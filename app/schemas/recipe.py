@@ -1,7 +1,7 @@
 import uuid
 from datetime import datetime
 from typing import Optional, List
-from pydantic import BaseModel, Field, HttpUrl
+from pydantic import BaseModel, Field, HttpUrl, model_validator
 from app.models.recipe import SourceType, RecipeStatus
 
 class RecipeTextRequest(BaseModel):
@@ -9,10 +9,28 @@ class RecipeTextRequest(BaseModel):
     text: str = Field(..., min_length=2, description="Raw recipe text content or dish search query")
 
 class RecipeURLRequest(BaseModel):
-    url: str = Field(..., description="Recipe webpage URL")
+    url: Optional[str] = Field(None, description="Recipe webpage URL")
+    video_url: Optional[str] = Field(None, description="Alternative URL key")
+
+    @model_validator(mode="after")
+    def resolve_url(self):
+        target = self.url or self.video_url
+        if not target:
+            raise ValueError("url field is required.")
+        self.url = target
+        return self
 
 class RecipeVideoRequest(BaseModel):
-    video_url: str = Field(..., description="YouTube video URL")
+    video_url: Optional[str] = Field(None, description="YouTube video URL")
+    url: Optional[str] = Field(None, description="Alternative URL key")
+
+    @model_validator(mode="after")
+    def resolve_video_url(self):
+        target = self.video_url or self.url
+        if not target:
+            raise ValueError("video_url or url field is required.")
+        self.video_url = target
+        return self
 
 class IngredientUpdateRequest(BaseModel):
     id: uuid.UUID
