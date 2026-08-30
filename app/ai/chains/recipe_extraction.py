@@ -42,14 +42,17 @@ def extract_recipe_chain(
         else:
             llm = get_recipe_llm()
             structured_llm = RECIPE_EXTRACTION_PROMPT | llm.with_structured_output(ExtractedRecipe)
-            return structured_llm.invoke({
+            result = structured_llm.invoke({
                 "input_type": input_type,
                 "raw_content": raw_content
             })
 
-        result: ExtractedRecipe = structured_llm.invoke(messages)
         if not result or not isinstance(result, ExtractedRecipe):
-            raise ValueError("Structured output returned null or invalid object.")
+            raise AppException(
+                status_code=status.HTTP_502_BAD_GATEWAY,
+                code="LLM_STRUCTURE_ERROR",
+                message="AI model produced null or invalid recipe structure."
+            )
         return result
 
     except AppException:

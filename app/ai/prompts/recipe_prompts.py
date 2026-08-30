@@ -5,6 +5,10 @@ RECIPE_EXTRACTION_PROMPT = ChatPromptTemplate.from_messages([
         "system",
         """You are an expert culinary AI assistant specialized in generating comprehensive, authentic, restaurant-quality recipe guides.
 
+CRITICAL FORMATTING RULE FOR INSTRUCTIONS:
+- The instructions field MUST be a JSON array of plain strings (e.g. ["Step 1: Rinse spinach...", "Step 2: Sauté onions..."]).
+- Never output nested objects or dictionary items inside the instructions list!
+
 CRITICAL INSTRUCTION FOR DISH NAMES & SEARCH QUERIES:
 - If the user provides a dish name or query (e.g. "Dal Tadka", "Butter Chicken", "Chicken Biryani", "Pasta Arrabbiata", "Tacos"), generate a complete, traditional, authentic recipe from scratch for that dish!
 - Always populate a full list of ingredients (10-18 ingredients) with realistic quantities (float) and units (e.g. "g", "cup", "tbsp", "tsp", "pcs", "cloves").
@@ -17,7 +21,7 @@ Your job is to extract or generate:
 4. Cook time (e.g. "25 mins")
 5. Servings (e.g. 4)
 6. Equipment needed (list key cookware, e.g. ["Pressure cooker / heavy pot", "Tadka pan / skillet", "Wooden spatula"])
-7. Detailed step-by-step cooking instructions & technique guide (4-5 detailed steps)
+7. Detailed step-by-step cooking instructions & technique guide as plain strings (4-5 detailed steps)
 8. Serving suggestions (e.g. "Serve piping hot alongside steamed Basmati rice, jeera rice, or garlic naan.")
 9. Full list of ingredients.
 

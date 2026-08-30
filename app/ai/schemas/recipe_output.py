@@ -15,6 +15,6 @@ class ExtractedRecipe(BaseModel):
     cook_time: Optional[str] = Field("25 mins", description="Cooking time")
     servings: Optional[int] = Field(4, description="Servings count")
     equipment_needed: List[str] = Field(default_factory=list, description="Key cookware and tools")
-    instructions: List[str] = Field(default_factory=list, description="Step-by-step detailed cooking instructions")
+    instructions: List[str] = Field(default_factory=list, description="List of plain string cooking steps. Do NOT output objects or key-value pairs.")
     serving_suggestions: Optional[str] = Field(None, description="Garnishing & serving suggestions")
     ingredients: List[ExtractedIngredient] = Field(default_factory=list, description="List of ingredients")
