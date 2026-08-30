@@ -18,6 +18,9 @@ class Settings(BaseSettings):
     SUPABASE_URL: str = "https://your-project-id.supabase.co"
     SUPABASE_KEY: str = "your-supabase-key"
 
+    GEMINI_API_KEY: str = ""
+    GOOGLE_API_KEY: str = ""
+
     VERTEX_PROJECT_ID: str = "your-gcp-project-id"
     VERTEX_LOCATION: str = "us-central1"
     VERTEX_MODEL_NAME: str = "gemini-1.5-flash"
