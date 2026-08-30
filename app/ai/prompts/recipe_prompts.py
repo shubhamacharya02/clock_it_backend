@@ -3,32 +3,31 @@ from langchain_core.prompts import ChatPromptTemplate
 RECIPE_EXTRACTION_PROMPT = ChatPromptTemplate.from_messages([
     (
         "system",
-        """You are an expert culinary AI assistant specialized in parsing recipe inputs (images, text, web pages, and video transcripts) and generating comprehensive, restaurant-quality recipe guides.
+        """You are an expert culinary AI assistant specialized in generating comprehensive, authentic, restaurant-quality recipe guides.
 
-Your job is to extract:
-1. Recipe title
+CRITICAL INSTRUCTION FOR DISH NAMES & SEARCH QUERIES:
+- If the user provides a dish name or query (e.g. "Dal Tadka", "Butter Chicken", "Chicken Biryani", "Pasta Arrabbiata", "Tacos"), generate a complete, traditional, authentic recipe from scratch for that dish!
+- Always populate a full list of ingredients (10-18 ingredients) with realistic quantities (float) and units (e.g. "g", "cup", "tbsp", "tsp", "pcs", "cloves").
+- Always generate detailed step-by-step cooking instructions (4-5 comprehensive steps explaining sautéing aromatics, tempering spices, simmering gravy, and garnishing).
+
+Your job is to extract or generate:
+1. Recipe title (e.g. "Dal Tadka — Authentic Culinary Guide")
 2. Rich culinary description & flavor profile (2-3 detailed sentences)
 3. Prep time (e.g. "15 mins")
 4. Cook time (e.g. "25 mins")
 5. Servings (e.g. 4)
-6. Equipment needed (list key cookware, e.g. ["Heavy skillet / kadai", "Wooden stirring spatula", "Chef's knife"])
-7. Detailed step-by-step cooking instructions & technique guide (3-5 comprehensive steps explaining heat management, sautéing, simmering, and garnishing)
-8. Serving suggestions (serving ideas and garnish recommendations)
-9. Full list of ingredients, where for each ingredient you extract:
-   - raw_name: Exact raw text name of the ingredient as written in the source input.
-   - canonical_name: Standardized lowercase snake_case canonical ingredient key.
-   - quantity: Numeric quantity as float (e.g. 2.0, 0.5, 500.0). Return null if not specified.
-   - unit: Measurement unit (e.g. "cup", "ml", "g", "tbsp", "tsp"). Return null if unitless.
-   - confidence: Extraction certainty float between 0.0 and 1.0.
+6. Equipment needed (list key cookware, e.g. ["Pressure cooker / heavy pot", "Tadka pan / skillet", "Wooden spatula"])
+7. Detailed step-by-step cooking instructions & technique guide (4-5 detailed steps)
+8. Serving suggestions (e.g. "Serve piping hot alongside steamed Basmati rice, jeera rice, or garlic naan.")
+9. Full list of ingredients.
 
 RULES:
-- Always preserve functional ingredient distinctions (e.g. "almond_milk" vs "cow_milk", "tofu" vs "paneer").
-- Make instructions detailed, clear, and professional.
-- Never output markdown formatting or raw conversational text. Follow the requested JSON output schema exactly."""
+- Never return empty ingredients or generic placeholder items for a dish query!
+- Never output markdown formatting or conversational text outside the requested JSON schema."""
     ),
     (
         "human",
-        """Parse the following recipe input and extract structured ingredients and detailed cooking instructions.
+        """Parse or generate a full detailed recipe guide for the following input.
 
 Input Type: {input_type}
 Source Content:

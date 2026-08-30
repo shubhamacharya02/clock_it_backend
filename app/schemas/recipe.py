@@ -6,7 +6,7 @@ from app.models.recipe import SourceType, RecipeStatus
 
 class RecipeTextRequest(BaseModel):
     title: Optional[str] = Field("Untitled Recipe", max_length=255)
-    text: str = Field(..., min_length=10, description="Raw recipe text content")
+    text: str = Field(..., min_length=2, description="Raw recipe text content or dish search query")
 
 class RecipeURLRequest(BaseModel):
     url: str = Field(..., description="Recipe webpage URL")
