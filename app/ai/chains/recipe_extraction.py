@@ -1,3 +1,5 @@
+import re
+import json
 import base64
 from typing import Optional
 from fastapi import status
@@ -15,9 +17,11 @@ def extract_recipe_chain(
     mime_type: str = "image/jpeg"
 ) -> ExtractedRecipe:
     """
-    LangChain recipe extraction chain using ChatPromptTemplate and structured output validation.
-    Returns ExtractedRecipe Pydantic schema or raises 502 LLM_STRUCTURE_ERROR.
+    Dual-mode recipe extraction chain.
+    1. Tries structured output (Function Calling) first.
+    2. Fallbacks to raw LLM completion + Markdown JSON extraction for long transcripts/webpages.
     """
+    # 1. Try structured function calling output
     try:
         if is_vision and image_bytes:
             llm = get_vision_llm()
@@ -29,7 +33,6 @@ def extract_recipe_chain(
                 raw_content=raw_content
             )
             
-            # Append multimodal image block to human message
             system_msg = formatted_messages[0]
             human_msg_content = [
                 {"type": "text", "text": formatted_messages[1].content},
@@ -39,6 +42,7 @@ def extract_recipe_chain(
                 }
             ]
             messages = [system_msg, HumanMessage(content=human_msg_content)]
+            result = structured_llm.invoke(messages)
         else:
             llm = get_recipe_llm()
             structured_llm = RECIPE_EXTRACTION_PROMPT | llm.with_structured_output(ExtractedRecipe)
@@ -47,20 +51,31 @@ def extract_recipe_chain(
                 "raw_content": raw_content
             })
 
-        if not result or not isinstance(result, ExtractedRecipe):
-            raise AppException(
-                status_code=status.HTTP_502_BAD_GATEWAY,
-                code="LLM_STRUCTURE_ERROR",
-                message="AI model produced null or invalid recipe structure."
-            )
-        return result
+        if result and isinstance(result, ExtractedRecipe) and result.ingredients:
+            return result
+    except Exception:
+        pass
 
-    except AppException:
-        raise
-    except Exception as exc:
-        raise AppException(
-            status_code=status.HTTP_502_BAD_GATEWAY,
-            code="LLM_STRUCTURE_ERROR",
-            message="AI model produced structurally invalid or unparseable recipe output.",
-            details=[{"error": str(exc)}]
-        )
+    # 2. Dual-mode fallback: Raw completion + robust JSON extraction
+    try:
+        llm = get_recipe_llm()
+        raw_res = (RECIPE_EXTRACTION_PROMPT | llm).invoke({
+            "input_type": input_type,
+            "raw_content": raw_content
+        })
+        text = raw_res.content if hasattr(raw_res, "content") else str(raw_res)
+        
+        match = re.search(r"```(?:json)?\s*(\{[\s\S]*?\})\s*```", text)
+        json_str = match.group(1) if match else text[text.find("{"):text.rfind("}")+1]
+        
+        parsed = ExtractedRecipe.model_validate_json(json_str)
+        if parsed and isinstance(parsed, ExtractedRecipe) and parsed.ingredients:
+            return parsed
+    except Exception:
+        pass
+
+    raise AppException(
+        status_code=status.HTTP_502_BAD_GATEWAY,
+        code="LLM_STRUCTURE_ERROR",
+        message="AI model produced null or invalid recipe structure."
+    )
